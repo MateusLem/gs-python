@@ -28,7 +28,7 @@
 8. [Colaboradores do Projeto](#colaboradores-do-projeto)
 
 ## Sobre
-<a href="https://youtu.be/VSMa45d5Das?si=ktKmnKgCoL5rEsu8" target="_blank" style="text-decoration: none"><img src="#"></a>
+<a href="" target="_blank" style="text-decoration: none"><img src="./img/thumb.jpg"></a>
 
 
 ### Nosso Projeto
