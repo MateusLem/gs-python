@@ -57,13 +57,14 @@ def verifica_leitura(payload: dict) -> None:
         text += f"O pH está dentro do parâmetro esperado - {media_ph}"
 
     # Exibição do texto com formatação para melhor leitura do usuário
-    print("=" * 60)
+    print("\n"+"=" * 60)
     print(text)
     print("=" * 60 + "\n")
 
 
 def exibe_leituras(payload: dict) -> None:
     """Lê o payload enviado pelo Arduino e formata-o para ser lido, pensando na melhor experiência do usuário"""
+    print("\n")
     for campo in payload:
         print("=" * 25)
         # Separa as exibições de média das demais, uma vez que são apenas um valor, e não uma lista de dados
@@ -73,7 +74,6 @@ def exibe_leituras(payload: dict) -> None:
             print(f"Dados: {campo}")
             for leitura in range(len(payload[campo])):
                 print(f"{leitura+1}° leitura: {payload[campo][leitura]}")
-
     print("=" * 25 + "\n")
 
 
@@ -96,7 +96,7 @@ def simula_payload() -> dict:
 
     # Calculo das médias
     media_temp = media_template(temperaturas)
-    media_ph = media_template(temperaturas)
+    media_ph = media_template(ph)
 
     # Json do protótipo
     return {
@@ -114,8 +114,7 @@ def verifica_arduino() -> dict:
     return simula_payload()
 
 
-# Configurações do Arduino
-# ALTERAR CONFORME SUA NECESSIDADE
+# Configurações do Arduino - ALTERAR CONFORME SUA NECESSIDADE
 serial_port = "COM1"
 baud_rate = 9600
 
@@ -126,20 +125,20 @@ run = True  # Força execução do programa
 conn = force_yes_no("O Arduino está conectado?")
 if conn == 2:
     arduino = False
-    conn = force_yes_no("Você deseja conecta-lo?\nLembrando que uma vez iniciado, não será possível conecta-lo mais.")  # Em caso negativo, pressupõe-se que o usuário quer apenas simular o funcionamento do Arduino
+    conn = force_yes_no("\nVocê deseja conecta-lo?\nLembrando que uma vez iniciado, não será possível conecta-lo mais.")  # Em caso negativo, pressupõe-se que o usuário quer apenas simular o funcionamento do Arduino
     if conn == 1:
-        print("Beleza!!!")
-        print("Como o Arduino precisa estar previamente conectado para funcionar, vamos encerrar o programa por aqui!")
+        print("\nBeleza!!!")
+        print("Como o Arduino precisa estar previamente conectado para funcionar, vamos encerrar o programa por aqui!\n")
         run = False
 
 if run:
     payload = verifica_arduino()
-    print("=" * 30)
+    print("\n"+"=" * 30)
     print("Bem vindo ao Blue Reckon!!!")
-    print("=" * 30)
+    print("=" * 30+"\n")
     while run:
         print("Escolha uma opção!")
-        print("1 - Gerar uma leitura")
+        print("1 - Atualizar leitura")
         print("2 - Verificar status do sistema")
         print("3 - Exibir a última leitura do sistema")
         print("4 - Encerrar programa")
@@ -148,17 +147,20 @@ if run:
         match opcao:
             case 1:
                 payload = verifica_arduino()
+                print('Leitura atualizada!!!\n')
             case 2:
                 verifica_leitura(payload)
             case 3:
                 exibe_leituras(payload)
             case 4:
                 # Confirmação do encerramento
-                confirma = force_yes_no("Tem certeza que quer sair?")
+                confirma = force_yes_no("\nTem certeza que quer sair?")
                 if confirma == 1:
-                    print("Encerrando programa")
+                    print("\n*Encerrando programa*\n")
                     run = False
                 else:
-                    print("Cancelando encerramento")
+                    print("\n*Cancelando encerramento*\n")
+            case _:
+                print("\n Opção inválida!!!\n")
 
 print("Obrigado e até logo!!!")
