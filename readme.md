@@ -6,7 +6,7 @@
    - [Nossa Proposta](#nosso-projeto)
    - [Nosso Objetivo](#nosso-objetivo)
 2. [Simulação Wokwi](#simulação-wokwi)
-3. [Técnologias](#técnologias)
+3. [Tecnologias](#tecnologias)
    - [Importante](#importante)
 4. [Disclaimer](#disclaimer)
 5. [Explicação do Código](#explicação-do-código)
@@ -45,7 +45,7 @@ Queremos mudar o mindset das novas gerações, para que estas possam mudar o mun
 
 <a href="https://wokwi.com/projects/399438925654312961" target="_blank" style="text-decoration: none"><img src="./img/circuito.png"></a>
 
-## Técnologias
+## Tecnologias
 <a href="https://www.python.org/downloads/" target="_blank" style="margin-right:10px"><img src="https://img.shields.io/badge/Python-1277c9?style=for-the-badge&logo=python&logoColor=yellow&labelColor=0d4991"></a>
 
 ### **_IMPORTANTE_**
