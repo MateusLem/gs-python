@@ -350,7 +350,7 @@ if run:
                 else:
                     print("\n*Cancelando encerramento*\n")
             case _:
-                print("\n Opção inválida!!!\n")
+                print("\nOpção inválida!!!\n")
 
 print("Obrigado e até logo!!!")
 ```
@@ -400,7 +400,7 @@ match opcao:
       else:
          print("\n*Cancelando encerramento*\n")
    case _:
-         print("\n Opção inválida!!!\n")
+         print("\nOpção inválida!!!\n")
 ```
 ### Confimarção de Encerramento
 Este trecho de código solicita ao usuário uma confirmação antes de encerrar o programa. 
