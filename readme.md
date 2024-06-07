@@ -28,6 +28,8 @@
 8. [Colaboradores do Projeto](#colaboradores-do-projeto)
 
 ## Sobre
+<a href="https://youtu.be/VSMa45d5Das?si=ktKmnKgCoL5rEsu8" target="_blank" style="text-decoration: none"><img src="#"></a>
+
 
 ### Nosso Projeto
 Monitoramento de Temperatura e PH com Arduino foi construído utilizando um sensor DS18B20 e um sensor de PH. Os dados são processados e armazenados em arrays, transmitidos em formato JSON via comunicação serial para um aplicativo Python. LEDs e buzzer são usados para indicar o estado das leituras.
