@@ -161,6 +161,6 @@ if run:
                 else:
                     print("\n*Cancelando encerramento*\n")
             case _:
-                print("\n Opção inválida!!!\n")
+                print("\nOpção inválida!!!\n")
 
 print("Obrigado e até logo!!!")
