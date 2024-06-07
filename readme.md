@@ -39,7 +39,8 @@ Pretendemos com essa plataforma, informar sobre os riscos de não cuidar do noss
 Queremos mudar o mindset das novas gerações, para que estas possam mudar o mundo: esse é o propósito do nosso projeto que tem como missão informar e alertar sobre os perigos de negligenciar o Oceano. Cuidar deste é o nosso dever como ser humano. O nosso projeto consiste em uma plataforma de informações com artigos, informações e um dashboard de monitoramento, no qual será demonstrado medições feitas através de sensores, informando em tempo real dados sobre o Ph da água e  a temperatura. 
 
 ## Simulação Wokwi
-[Simulação](https://wokwi.com/projects/399438925654312961)
+[Projeto Edge](https://github.com/MateusLem/gs-edge)
+
 <a href="https://wokwi.com/projects/399438925654312961" target="_blank" style="text-decoration: none"><img src="./img/circuito.png"></a>
 
 ## Técnologias
@@ -77,39 +78,76 @@ import random
 
 ## Funções
 ### force_num
+Esta função força com que o usuário informe um número inteiro, positivo/nulo. É utilizada para padronizar as respostas dos usuários.
+
+Inicialmente, pede-se um input para o usuário, com um texto de template fornecido como parâmetro. Em seguida, um loop `while` é iniciado caso a resposta não seja um numeral (o que inclui '.', ',' e '-').
+
+Enquanto essa condição não é cumprida, uma mensagem de erro é exibida, seguida de um novo input.
+
+Ao final da execução, o valor escrito é retornado como um `int`.
 ```
 def force_num(msg:str) -> int:
-    '''Força que o input do usuário seja um numeral'''
-    resp = input(msg)
-    while not resp.isnumeric():
-        print("Resposta inválida")
-        resp = input(msg)
-    return int(resp)
+   '''Força que o input do usuário seja um numeral'''
+   resp = input(msg)
+   while not resp.isnumeric():
+      print("Resposta inválida")
+      resp = input(msg)
+   return int(resp)
 ```
 ### force_yes_no
+Esta função força com que o usuário escolha entre 'sim' ou 'não'.
+
+Primeiramente, a função exibe uma mensagem recebida como parâmetro. Em seguida, a variável `resp` é criada, recebendo como valor o retorno da função [force_num](#force_num), obrigando a resposta ser um numeral.
+
+De forma similar à função [force_num](#force_num), um loop `while` é iniciado caso o valor da variável seja diferente de '1' e '2', exibindo uma mensagem de erro e forçando o usuário à informar um novo valor.
+
+Por fim, a resposta final é retornada como um `int`.
 ```
-def force_yes_no(msg:str) -> int:
-    '''Força que o input do usuário seja 1 -> Sim ou 2 -> Não'''
-    print(msg)
-    resp = input("1 -> Sim | 2 -> Não: ")
-    while not resp.isnumeric() and resp != '1' and resp != '2':
-        print("Resposta inválida")
-        resp = input("1 -> Sim | 2 -> Não: ")
-    return int(resp)
+def force_yes_no(msg: str) -> int:
+   """Força que o input do usuário seja 1 -> Sim ou 2 -> Não"""
+   print(msg)
+   resp = force_num("1 -> Sim | 2 -> Não: ")
+   while not (resp == 1 or resp == 2):
+      print("Resposta inválida")
+      resp = force_num("1 -> Sim | 2 -> Não: ")
+   return resp
 ```
 ### media_template
+Esta função permite calcular a média dos valores de uma dada lista (recebida como parâmetro).
+
+Primeiramente, é criada a variável local _total_ que irá receber a soma dos elementos da lista.
+Em seguida, um loop _for_ itera por cada elemento, torna-os float para previnir erros de tipo e soma-os à variável.
+
+Terminado o loop, a variável media é criada para armazenar a média, dada pela divisão de total pelo comprimento da lista, adquirido através da função `len()`.
+
+Finalmente, o valor da média é formatado para ter duas casas decimais e convertido para `float` antes de ser retornado.
 ```
 def media_template(lista:list) -> float:
-    '''
-    Permite calcular médias de listas de forma genérica.
+   '''
+   Permite calcular médias de listas de forma genérica.
     Retorna o resultado como float com 2 casas decimais
-    '''
-    total=0
-    for elemento in lista:
-        total+=elemento    
-    return float("{:.2f}".format(total/len(lista)))
+   '''
+   total=0
+   for elemento in lista:
+      total+=float(elemento)
+
+   media = total/len(lista)
+   media_2f = float("{:.2f}".format(media))
+
+   return media_2f
 ```
 ### verifica_leitura
+Esta função verifica os campos de "média" da leitura e exibe uma mensagem condizente com os dados lidos. A função recebe um dicionário `payload` como parâmetro, que deve conter as chaves `'mediaTemp'` e `'mediapH'`.
+
+Primeiramente, as médias de temperatura e pH são extraídas do dicionário. Em seguida, a variável text é criada para armazenar as mensagens que serão exibidas.
+
+Dependendo dos valores de média de temperatura e pH, são adicionadas mensagens apropriadas à variável text.
+
+Se a temperatura estiver abaixo de 18°C ou acima de 28°C, são geradas mensagens indicando que a temperatura está fora do normal. Caso contrário, uma mensagem indicando que a temperatura está dentro do parâmetro esperado é gerada.
+
+Da mesma forma, se o pH estiver abaixo de 7.4 ou acima de 8.5, são geradas mensagens indicando que o pH está fora do normal, caso contrário, uma mensagem indicando que o pH está dentro do parâmetro esperado é gerada.
+
+Por fim, o texto é exibido formatado para melhor leitura do usuári
 ```
 def verifica_leitura(payload:dict) -> None:
     '''Verifica os campos de "média" da leitura e exibe uma mensagem condizente com os dados lidos'''
@@ -137,6 +175,11 @@ def verifica_leitura(payload:dict) -> None:
     print("="*60+"\n")
 ```
 ### exibe_leituras
+Esta função lê o payload enviado pelo Arduino e formata-o para ser lido, pensando na melhor experiência do usuário. A função recebe um dicionário `payload` como parâmetro.
+
+Para cada campo no dicionário, um bloco de texto é exibido. Se o campo contiver a palavra 'media', o valor correspondente é exibido diretamente. Caso contrário, é assumido que o campo contém uma lista de leituras.
+
+Para cada leitura na lista, é exibida uma linha indicando a posição da leitura e o valor correspondente.
 ```
 def exibe_leituras(payload:dict) -> None:
     '''Lê o payload enviado pelo Arduino e formata-o para ser lido, pensando na melhor experiência do usuário'''
@@ -153,6 +196,11 @@ def exibe_leituras(payload:dict) -> None:
     print("="*25+"\n")   
 ```
 ### read_serial
+Esta função lê o monitor Serial do Arduino e converte o JSON impresso como um dicionário. Ela não recebe parâmetros.
+
+Primeiramente, a conexão serial é estabelecida com a porta e a taxa de baud especificadas pelas variáveis globais `serial_port` e `baud_rate`.
+
+A função entra em um loop que verifica se há dados disponíveis na conexão serial. Quando dados são encontrados, eles são lidos e decodificados como uma string UTF-8. A string é limpa de espaços em branco e, se não estiver vazia, a conexão serial é fechada e os dados são convertidos de JSON para um dicionário, que é então retornado.
 ```
 def read_serial() -> dict:
     '''Lê o monitor Serial do Arduino, e converte o json impresso como dicionário'''
@@ -165,21 +213,38 @@ def read_serial() -> dict:
                 return json.loads(json_data)
 ```
 ### simula_payload
+Esta função simula uma leitura de payload do Arduino enviada pelo monitor Serial. Ela não recebe parâmetros.
+
+Primeiramente, listas de leituras de temperatura e pH são geradas. Cada lista contém 10 valores flutuantes aleatórios, formatados para ter duas casas decimais.
+
+Em seguida, são calculadas as médias das leituras de temperatura e pH usando a função [media_template](#media_template).
+
+Finalmente, é retornado um dicionário contendo as leituras de temperatura, pH, e suas respectivas médias.
 ```
 def simula_payload() -> dict:
-    '''Simula uma leitura de payload do Arduino enviada pelo monitor Serial'''
-    # Leituras de temperatura e pH
-    temperaturas = [float("{:.2f}".format(random.uniform(2, 30))) for _ in range(10)]
-    ph = [float("{:.2f}".format(random.uniform(0, 14))) for _ in range(10)]
+   '''Simula uma leitura de payload do Arduino enviada pelo monitor Serial'''
+   # Leituras de temperatura e pH
+   temperaturas = [float("{:.2f}".format(random.uniform(2, 30))) for _ in range(10)]
+   ph = [float("{:.2f}".format(random.uniform(0, 14))) for _ in range(10)]
 
-    #Calculo das médias
-    media_temp = media_template(temperaturas)
-    media_ph = media_template(temperaturas)
+   #Calculo das médias
+   media_temp = media_template(temperaturas)
+   media_ph = media_template(temperaturas)
 
-    #Json do protótipo
-    return {"temperaturas":temperaturas,"pH":ph,"mediaTemp":media_temp,"mediapH":media_ph}
+   #Json do protótipo
+   return {
+         "temperaturas": temperaturas,
+         "pH": ph,
+         "mediaTemp": media_temp,
+         "mediapH": media_ph,
+    }
 ```
 ### verifica_arduino
+Esta função verifica se o Arduino está conectado. Ela não recebe parâmetros e retorna um dicionário contendo os dados lidos do Arduino ou simulados.
+
+Se a variável global `arduino` for `True`, a função [read_serial](#read_serial) é chamada para ler os dados do Arduino. Caso contrário, a função [simula_payload](#simula_payload) é chamada para simular os dados.
+
+Esta função foi criada principalmente para reutilização de código.
 ```
 def verifica_arduino() -> dict:
     '''Verifica se o Arduino está conectado'''
@@ -190,6 +255,7 @@ def verifica_arduino() -> dict:
 
 ## Execução
 ### Declarações globais
+As seguintes variáveis globais são definidas para configurar a conexão com o Arduino e a execução do programa:
 ```
 # Configurações do Arduino
 # ALTERAR CONFORME SUA NECESSIDADE
@@ -202,6 +268,9 @@ run = True # Força execução do programa
 ```
 
 ### Verificação Arduino
+O trecho de código a seguir pergunta ao usuário se o Arduino está conectado. Se o usuário responder que não, ele pergunta se deseja conectá-lo.
+
+Se o usuário optar por conectar o Arduino, o programa informa que deve ser encerrado, pois o Arduino precisa estar previamente conectado para funcionar. Caso contrário, o programa continua com a variável `arduino` definida como `False`.
 ```
 conn = force_yes_no("O Arduino está conectado?")
 if conn == 2:
@@ -212,10 +281,27 @@ if conn == 2:
         print("Como o Arduino precisa estar previamente conectado para funcionar, vamos encerrar o programa por aqui!")
         run = False
 ```
+Com essas funções e a estrutura global configurada, o programa pode ser executado para ler dados do Arduino ou simular leituras, exibir os dados e verificar se estão dentro dos parâmetros esperados.
 
 ## Principal
-
 ### Execução Completa
+Este trecho de código configura e executa o programa principal. Ele inicializa as configurações do Arduino e define as variáveis globais necessárias para a execução do programa.
+
+Primeiramente, são configuradas as variáveis para a porta serial e a taxa de transmissão do Arduino. Também são definidas variáveis para indicar se o Arduino está conectado e se o programa deve ser executado.
+
+Se a execução do programa for permitida (variável run for True), uma leitura inicial do Arduino (ou simulação) é realizada e a mensagem de boas-vindas é exibida.
+
+Em seguida, um loop while é iniciado para exibir um menu de opções para o usuário. O usuário pode escolher entre gerar uma nova leitura, verificar o status do sistema, exibir a última leitura ou encerrar o programa.
+
+Dependendo da opção selecionada pelo usuário, diferentes funções são chamadas:
+- [verifica_arduino](#verifica_arduino): Gera uma nova leitura.
+- [verifica_leitura](#verifica_leitura): Verifica e exibe o status da última leitura.
+- [exibe_leituras](#exibe_leituras): Exibe os dados da última leitura.
+- [force_yes_no](#force_yes_no): Confirma se o usuário deseja encerrar o programa.
+
+Se o usuário confirmar que deseja encerrar o programa, a variável run é definida como False e o loop é encerrado.
+
+Na conclusão, uma mensagem de agradecimento é exibida ao usuário.
 ```
 # Configurações do Arduino
 # ALTERAR CONFORME SUA NECESSIDADE
@@ -227,45 +313,46 @@ arduino = True # Pressupõe que o usuário está com o Arduino conectado
 run = True # Força execução do programa
 
 if run:
-    payload = verifica_arduino()
-    while run:
-        print("="*30)
-        print("Bem vindo ao Blue Reckon!!!")
-        print("="*30)
-        
-        print("Escolha uma opção!")
-        print("1 - Gerar uma leitura")
-        print("2 - Verificar status do sistema")
-        print("3 - Exibir a última leitura do sistema")
-        print("4 - Encerrar programa")
-        opcao = force_num("\nOpções -> (1|2|3|4): ")
-        
-        match opcao:
-            case 1:
-                payload = verifica_arduino()
-            case 2:
-                verifica_leitura(payload)
-            case 3:
-                exibe_leituras(payload)
-            case 4:
-                # Confirmação do encerramento
-                confirma = force_yes_no('Tem certeza que quer sair?')
-                if confirma == 1:
-                    print("Encerrando programa")
-                    run = False
-                else:
-                    print("Cancelando encerramento")
-
+   payload = verifica_arduino()
+   print("="*30)
+   print("Bem vindo ao Blue Reckon!!!")
+   print("="*30)
+   while run:
+      print("Escolha uma opção!")
+      print("1 - Gerar uma leitura")
+      print("2 - Verificar status do sistema")
+      print("3 - Exibir a última leitura do sistema")
+      print("4 - Encerrar programa")
+      opcao = force_num("\nOpções -> (1|2|3|4): ")
+      
+      match opcao:
+         case 1:
+            payload = verifica_arduino()
+         case 2:
+            verifica_leitura(payload)
+         case 3:
+            exibe_leituras(payload)
+         case 4:
+            # Confirmação do encerramento
+            confirma = force_yes_no('Tem certeza que quer sair?')
+            if confirma == 1:
+               print("Encerrando programa")
+               run = False
+            else:
+               print("Cancelando encerramento")
 print("Obrigado e até logo!!!")
 ```
-
 ### Apresentação
+Este trecho de código exibe uma mensagem de boas-vindas ao usuário quando o programa é iniciado. A mensagem é formatada com linhas de separação para melhorar a legibilidade.
 ```
 print("="*30)
 print("Bem vindo ao Blue Reckon!!!")
 print("="*30)
 ```
 ### Menu
+Este trecho de código exibe um menu de opções para o usuário. 
+
+As opções permitem gerar uma nova leitura, verificar o status do sistema, exibir a última leitura ou encerrar o programa. A função [force_num](#force_num) é chamada para garantir que o usuário insira um número válido.
 ```
 print("Escolha uma opção!")
 print("1 - Gerar uma leitura")
@@ -275,24 +362,37 @@ print("4 - Encerrar programa")
 opcao = force_num("\nOpções -> (1|2|3|4): ")
 ```
 ### Execução da Seleção
+Este trecho de código utiliza a estrutura match-case para executar a ação correspondente à opção escolhida pelo usuário. 
+
+Dependendo da opção, diferentes funções são chamadas para processar a solicitação do usuário.
+
+- `case 1`: Chama a função [verifica_arduino](#verifica_arduino) para gerar uma nova leitura.
+- `case 2`: Chama a função [verifica_leitura](#verifica_leitura) para verificar e exibir o status da última leitura.
+- `case 3`: Chama a função [exibe_leituras](#exibe_leituras) para exibir os dados da última leitura.
+- `case 4`: Solicita confirmação do usuário para encerrar o programa.
 ```
 match opcao:
-            case 1:
-                payload = verifica_arduino()
-            case 2:
-                verifica_leitura(payload)
-            case 3:
-                exibe_leituras(payload)
-            case 4:
-                # Confirmação do encerramento
-                confirma = force_yes_no('Tem certeza que quer sair?')
-                if confirma == 1:
-                    print("Encerrando programa")
-                    run = False
-                else:
-                    print("Cancelando encerramento")
+   case 1:
+      payload = verifica_arduino()
+   case 2:
+      verifica_leitura(payload)
+   case 3:
+      exibe_leituras(payload)
+   case 4:
+      # Confirmação do encerramento
+      confirma = force_yes_no('Tem certeza que quer sair?')
+      if confirma == 1:
+         print("Encerrando programa")
+         run = False
+      else:
+         print("Cancelando encerramento")
 ```
 ### Confimarção de Encerramento
+Este trecho de código solicita ao usuário uma confirmação antes de encerrar o programa. 
+
+A função [force_yes_no](#force_yes_no) é chamada para garantir que o usuário responda com "sim" (1) ou "não" (2). 
+
+Se o usuário confirmar que deseja encerrar o programa, a variável `run` é definida como `False` e uma mensagem de encerramento é exibida. Caso contrário, uma mensagem de cancelamento do encerramento é exibida e o programa continua em execução.
 ```
 # Confirmação do encerramento
 confirma = force_yes_no('Tem certeza que quer sair?')
